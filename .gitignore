@@ -127,3 +127,6 @@ Android.bp
 
 #Output folder
 out
+
+#logs
+kernel_log-*.txt
