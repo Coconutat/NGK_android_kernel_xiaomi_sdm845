@@ -34,7 +34,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update -y 
-        sudo apt install binutils make python2 libssl-dev flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs bc bison build-essential ccache curl flex g++-multilib gcc-multilib git git-lfs gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev adb fastboot -y
+        sudo apt install binutils make python2 python3 libssl-dev flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs bc bison build-essential ccache curl flex g++-multilib gcc-multilib git git-lfs gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev adb fastboot -y
         git clone https://github.com/kdrag0n/proton-clang --dept=1 -b master
     
     - name: GetTime
@@ -53,8 +53,8 @@ jobs:
         export CLANG_TRIPLE=aarch64-linux-gnu-
         export CROSS_COMPILE=aarch64-linux-gnu-
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-        make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
-        make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
+        make ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- O=out nogravity-dipper_ksu_defconfig CC="clang"
+        make ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- O=out CC="clang" -j$(nproc --all)
         cp out/arch/arm64/boot/Image.gz-dtb tools/NoGravityKernel
 
     - name: Upload Kernel-SU
