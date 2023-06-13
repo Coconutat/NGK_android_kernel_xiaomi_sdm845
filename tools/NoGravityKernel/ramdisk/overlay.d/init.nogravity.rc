@@ -1,0 +1,196 @@
+# nogravity initialization script
+
+on early-init
+    # Nothing
+
+on init
+    # boottime stune
+    write /dev/stune/schedtune.prefer_idle 1
+    write /dev/stune/schedtune.boost 100
+
+on post-fs
+    # Nothing
+	
+on boot
+   setprop persist.spectrum.profile 0
+
+on property:sys.boot_completed=1
+   
+   chmod 644 /sys/class/thermal/thermal_message/sconfig
+   chmod 644 /sys/module/thermal_sys/parameters/lock_value
+   chmod 644 /sys/module/thermal_sys/parameters/lock_sconfig
+   chmod 644 /sys/module/thermal_sys/parameters/suspend_sconfig
+   chmod 644 /sys/module/smb_lib/parameters/skip_thermal
+
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us
+   #chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/exp_util
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us
+   #chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable
+   chmod 644 /sys/devices/system/cpu/cpu4/cpufreq/schedutil/exp_util
+   chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq
+
+   chmod 644 /sys/module/cpu_input_boost/parameters/remove_input_boost_freq_lp
+   chmod 644 /sys/module/cpu_input_boost/parameters/remove_input_boost_freq_perf
+   chmod 644 /sys/module/cpu_input_boost/parameters/input_boost_freq_lp
+   chmod 644 /sys/module/cpu_input_boost/parameters/input_boost_freq_hp
+   chmod 644 /sys/module/cpu_input_boost/parameters/input_boost_duration
+   chmod 644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost_duration
+   chmod 644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
+
+   chmod 644 /sys/class/kgsl/kgsl-3d0/devfreq/min_freq
+   chmod 644 /sys/class/kgsl/kgsl-3d0/min_gpuclk
+   chmod 644 /sys/class/kgsl/kgsl-3d0/devfreq/max_freq
+   chmod 644 /sys/class/kgsl/kgsl-3d0/max_gpuclk
+   chmod 644 /sys/class/kgsl/kgsl-3d0/throttling
+   chmod 644 /sys/class/kgsl/kgsl-3d0/bus_split
+   chmod 644 /sys/class/kgsl/kgsl-3d0/force_bus_on
+   chmod 644 /sys/class/kgsl/kgsl-3d0/force_rail_on
+   chmod 644 /sys/class/kgsl/kgsl-3d0/force_clk_on
+
+   chmod 644 /dev/cpuset/top-app/cpus
+   chmod 644 /dev/cpuset/foreground/cpus
+   chmod 644 /dev/cpuset/background/cpus
+   chmod 644 /dev/cpuset/system-background/cpus
+   chmod 644 /dev/cpuset/restricted/cpus
+   
+   # according to Qcom this legacy value improves first launch latencies
+   # stock value is 512k
+   # from franciscofranco
+   setprop dalvik.vm.heapminfree 2m
+
+   # ReadAhead
+   write /sys/block/mmcblk0/queue/read_ahead_kb 2048
+   write /sys/block/sda/queue/read_ahead_kb 2048
+   write /sys/block/sdb/queue/read_ahead_kb 2048
+   write /sys/block/sdc/queue/read_ahead_kb 2048
+   write /sys/block/sdd/queue/read_ahead_kb 2048
+   write /sys/block/sde/queue/read_ahead_kb 2048
+   write /sys/block/sdf/queue/read_ahead_kb 2048
+
+   write /dev/stune/blkio.group_idle 0
+   write /dev/stune/foreground/blkio.group_idle 1
+   write /dev/stune/background/blkio.group_idle 0
+   write /dev/stune/top-app/blkio.group_idle 2
+   write /dev/stune/rt/blkio.group_idle 2
+
+   write /dev/stune/blkio.weight 1000
+   write /dev/stune/foreground/blkio.weight 1000
+   write /dev/stune/background/blkio.weight 10
+   write /dev/stune/top-app/blkio.weight 1000
+   write /dev/stune/rt/blkio.weight 1000
+   
+   # TCP Congestion
+   write /proc/sys/net/ipv4/tcp_congestion_control westwood
+
+   # Sleep Disabled
+   #write /sys/power/autosleep mem
+   
+   # Fast Charge
+   write /sys/kernel/fast_charge/force_fast_charge 1
+
+   write /dev/cpuset/top-app/cpus "0-7"
+   write /dev/cpuset/foreground/cpus "0-3,6-7"
+   write /dev/cpuset/background/cpus "0-1"
+   write /dev/cpuset/system-background/cpus "0-3"
+   write /dev/cpuset/restricted/cpus "0-3"
+
+   # SILVER Cluster
+   write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor schedutil
+   write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+   write /sys/module/cpu_input_boost/parameters/remove_input_boost_freq_lp 300000
+   write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1766400
+   write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+   write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 2000
+   write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/exp_util 0
+   write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq 1228800
+
+   # GOLD Cluster
+   write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor schedutil
+   write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 825600
+   write /sys/module/cpu_input_boost/parameters/remove_input_boost_freq_perf 825600
+   write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2803200
+   write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+   write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 2000
+   write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/exp_util 0
+   write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq 1612800
+
+   #Dynamic Schedtune Boost
+   write /sys/module/cpu_input_boost/parameters/input_boost_freq_lp 748800
+   write /sys/module/cpu_input_boost/parameters/input_boost_freq_hp 1056000
+   write /sys/module/cpu_input_boost/parameters/input_boost_duration 128
+   write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost_duration 1500
+   write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost 15
+
+   #Schedtune
+   write /dev/stune/top-app/schedtune.prefer_idle 1
+   write /dev/stune/top-app/schedtune.boost 1
+   write /dev/stune/foreground/schedtune.prefer_idle 1
+   write /dev/stune/foreground/schedtune.boost 0
+   write /dev/stune/background/schedtune.boost -10
+   ## write /dev/stune/schedtune.prefer_idle 0
+
+   #IO Scheduler
+   write /sys/block/sda/queue/scheduler zen
+   write /sys/block/sdb/queue/scheduler zen
+   write /sys/block/sdc/queue/scheduler zen
+   write /sys/block/sdd/queue/scheduler zen
+   write /sys/block/sde/queue/scheduler zen
+   write /sys/block/sdf/queue/scheduler zen
+
+   #GPU
+   write /sys/class/kgsl/kgsl-3d0/max_clock_mhz 710
+   write /sys/class/kgsl/kgsl-3d0/min_clock_mhz 160
+
+   # Reset stune
+   write /dev/stune/schedtune.prefer_idle 0
+   write /dev/stune/schedtune.boost 0
+
+   # No Gravity Kernel App & Spectrum profiles setup
+   # Set default profile on first boot
+   setprop persist.spectrum.profile p0
+   # Enable Spectrum support
+   setprop spectrum.support 1
+   # Add kernel name
+   setprop persist.spectrum.kernel NoGravity
+
+   # To be used only for exclusive.sh commands
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/init.special_power.sh
+   
+# Balance (default profile)
+on property:persist.spectrum.profile=p0
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.balance.sh
+
+# Performance 
+on property:persist.spectrum.profile=p1
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.performance.sh
+
+# Battery
+on property:persist.spectrum.profile=p2
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.battery.sh
+
+# Gaming
+on property:persist.spectrum.profile=p3
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.gaming.sh
+
+# Gaming+
+on property:persist.spectrum.profile=p4
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.gamingplus.sh
+
+# Custom
+on property:persist.spectrum.profile=p5
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.balance.sh
+   exec u:r:magisk:s0 root root -- ${MAGISKTMP}/profile.custom.sh
+
+#add MIUI camera flag
+on property:sys.camera.miui.apk=*
+    setprop vendor.camera.miui.apk ${sys.camera.miui.apk}
